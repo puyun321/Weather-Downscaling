@@ -1,0 +1,3 @@
+zhuoshui_info.txt為該區域之所有的測站資訊
+selected_zhuoshui_info2 為所有時間序列選擇後的測站資訊
+selected_zhuoshui_info3 為所有選擇後的測站資訊，selected_zhuoshui_info2進行 remove duplicates的檔案
