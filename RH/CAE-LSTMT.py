@@ -83,33 +83,15 @@ from tensorflow.keras.optimizers import Adam
 import tensorflow.keras.backend as K
 from error_indicator import ErrorIndicator
 
-# data preprocessing
-def normalize_2d(array):
-    # Calculate the max and mean along the second dimension
-    min_ = np.min(array, axis=0, keepdims=True)
-    max_ = np.max(array, axis=0, keepdims=True)
-        
-    # Normalize the array along the second dimension
-    normalized_array = (array - min_) / (max_-min_)
-    return normalized_array
-
-def normalize_3d(array):
+def normalize_3d(n_array,array):
     # Calculate the max and mean along the third dimension
     f_array= array.reshape((array.shape[0]*array.shape[1],array.shape[2]))
     min_ = np.min(f_array, axis=0, keepdims=True)
     max_ = np.max(f_array, axis=0, keepdims=True)
         
     # Normalize the array along the third dimension
-    normalized_array = (array - min_) / (max_-min_)
+    normalized_array = (n_array - min_) / (max_-min_)
     return normalized_array
-
-# 資料反正規化
-def denormalize_2d(n_array,array):
-    # Calculate the max and mean along the second dimension
-    min_ = np.min(array, axis=0, keepdims=True)
-    max_ = np.max(array, axis=0, keepdims=True)
-    denormalized_array = n_array*(max_-min_)+min_
-    return denormalized_array
 
 # Define the positional encoding function
 def positional_encoding(max_len, d_model):
@@ -197,12 +179,8 @@ all_code=np.array([code[unique_date_index.iloc[index,0],:,:] for index in range(
 #%% define x and y 
 x_heterogeneous = all_code # we did not use heterogeneous input in this model
 x_homogeneous = homogeneous_input
-
-# normalization   
-norm_x_homogeneous = normalize_3d(x_homogeneous)
-norm_x_heterogeneous = normalize_3d(x_heterogeneous)
-obs_output=[obs_output1, obs_output2]
 forecast_index=1 # 0 for temperature, 1 for relative humidity
+obs_output=[obs_output1, obs_output2]
 y_output = np.array(obs_output[forecast_index]) #obs_output1
 
 #%% split into training, validation and testing
@@ -219,13 +197,14 @@ test_index=np.array(unique_index.iloc[int(len(unique_index)*(train_ratio+val_rat
 test_index_index=test_index.flatten()
 test_index=test_index[~np.isnan(test_index)].astype(int)
 
-x_homogeneous_train = norm_x_homogeneous[train_index,:,:]
-x_heterogeneous_train = norm_x_heterogeneous[train_index,:,:]
+#%% 
+x_homogeneous_train = x_homogeneous[train_index,:,:]
+x_heterogeneous_train = x_heterogeneous[train_index,:,:]
 y_output_train = y_output[train_index,:]
 train_date_info=np.array(date_info)[train_index]
 
-x_homogeneous_test = norm_x_homogeneous[test_index,:,:]
-x_heterogeneous_test = norm_x_heterogeneous[test_index,:,:]
+x_homogeneous_test = x_homogeneous[test_index,:,:]
+x_heterogeneous_test = x_heterogeneous[test_index,:,:]
 y_output_test = y_output[test_index,:]
 test_date_info=np.array(date_info)[test_index]
 
@@ -276,12 +255,13 @@ callback_list = [earlystopper,checkpoint]
 model.fit(x_train, y_output_train, epochs=epochs, batch_size=batch_size, validation_split=val_ratio/(train_ratio+val_ratio),callbacks=callback_list,shuffle=True)
 
 #%% model prediction
+model_name = 'spatiotemporal_transformer-lstm(%s)'%factor[forecast_index]
+batch_size = 64
 model = load_model("RH/model/"+ model_name+ ".keras")
 train_y = model.predict(x_train,batch_size=batch_size)
 test_y = model.predict(x_test,batch_size=batch_size)
 
 #%% model performance evaluation
-    
 train_performance=model_evaluation(train_y, y_output_train)
 test_performance=model_evaluation(test_y, y_output_test)
 
