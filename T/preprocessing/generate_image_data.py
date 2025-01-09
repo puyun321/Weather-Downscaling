@@ -53,7 +53,7 @@ for timestep in range(6):
     sort_T=np.array([T.iloc[new_unique_index[date_index],timestep] for date_index in range(new_unique_index.shape[0])])
     
     # Read the shapefile
-    shapefile_path = "D:/lab/research/weather downscale/zhuoshui/gis/zhuoshui_town/Export_Output_7.shp"
+    shapefile_path = "gis/zhuoshui_town.shp"
     gdf = gpd.read_file(shapefile_path)
     
     # Create a colormap

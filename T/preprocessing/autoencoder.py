@@ -46,7 +46,6 @@ test_data_1=[obs_T[index] for index in test_index]
 test_data_2=[simulate_T[index] for index in test_index]
 test_data=np.concatenate([test_data_1,test_data_2])
 
-
 #%% Check if GPU is available
 import tensorflow as tf
 
@@ -64,7 +63,6 @@ from tensorflow.keras.layers import Dense,Conv2D,Flatten,Lambda,MaxPooling2D,UpS
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.optimizers import Adam
-from error_indicator import ErrorIndicator
 
 """ Define DNN model """
             
@@ -93,6 +91,9 @@ def AE_model(input_shape):
     return model 
 
 
+#%% change to correct wd
+os.chdir(os.path.dirname(__file__))
+os.chdir("..")
 
 #%% model construction
 model=AE_model(train_data.shape)
@@ -113,52 +114,78 @@ batch_size=8
 train_y = model.predict(train_data,batch_size=batch_size)
 test_y = model.predict(test_data,batch_size=batch_size)
 
+#%% get model code 
+# Define a new model that outputs the desired layer's output
+get_code = Model(inputs=model.input, outputs=model.layers[7].output)
+
+# Get the output of the desired layer using the predict method
+train_code_y = get_code.predict(train_data)
+test_code_y = get_code.predict(test_data)
+
+#%% save encoded data to dataframe (see code dataset)
+train_code_y = pd.DataFrame(train_code_y)
+test_code_y = pd.DataFrame(test_code_y)
+
+writer = pd.ExcelWriter(r"code_dataset\RH\encoded_value.xlsx",engine='xlsxwriter')
+train_code_y.iloc[train_index,:].reset_index(drop=True).to_excel(writer,sheet_name="train_code_y(obs)")
+train_code_y.iloc[len(train_index):,:].reset_index(drop=True).to_excel(writer,sheet_name="train_code_y(simulate)")
+test_code_y.iloc[:len(test_index),:].reset_index(drop=True).to_excel(writer,sheet_name="test_code_y(obs)")
+test_code_y.iloc[len(test_index):,:].reset_index(drop=True).to_excel(writer,sheet_name="test_code_y(simulate)")
+# Save the Excel file
+writer.close()
+
+#%%
+"""
+The code below is to generate the autoencoder prediction, run if only needed (need to spent a lot of time)
+"""
+
 #%% save figures
 for i in range(len(train_y)):
     if i <len(train_index):
-        file_path="ae_dataset\T\obs\%s"%obs_path_dir[i]
+        file_path="image_result\ae_predict\obs\%s"%obs_path_dir[i]
         # Save the image
         cv2.imwrite(file_path, train_y[i])
         
-        file_path2="ae_dataset\\T\\real data\\obs_%s"%obs_path_dir[i]
+        file_path2="image_result\\ae_predict\\real data\\obs_%s"%obs_path_dir[i]
         cv2.imwrite(file_path2, train_data[i])      
         
     else:
         index=i-len(train_index)
-        file_path="ae_dataset\T\simulate\%s"%simulate_path_dir[index]
+        file_path="image_result\ae_predict\simulate\%s"%simulate_path_dir[index]
         # Save the image
         cv2.imwrite(file_path, train_y[i]) 
         
-        file_path2="ae_dataset\\T\\real data\\simulate_%s"%obs_path_dir[index]
+        file_path2="image_result\\ae_predict\\real data\\simulate_%s"%obs_path_dir[index]
         cv2.imwrite(file_path2, train_data[i])
     
 for i in range(len(test_y)):
     if i <len(test_index):
         index=i+len(train_index)
-        file_path="ae_dataset\T\obs\%s"%obs_path_dir[index]
+        file_path="image_result\ae_predict\obs\%s"%obs_path_dir[index]
         # Save the image
         cv2.imwrite(file_path, test_y[i])
         
-        file_path2="ae_dataset\\T\\real data\\obs_%s"%obs_path_dir[index]
+        file_path2="image_result\\ae_predict\\real data\\obs_%s"%obs_path_dir[index]
         cv2.imwrite(file_path2, test_data[i])
     else:
         index=i-len(test_index)+len(train_index)
-        file_path="ae_dataset\T\simulate\%s"%simulate_path_dir[index]
+        file_path="image_result\ae_predict\simulate\%s"%simulate_path_dir[index]
         # Save the image
         cv2.imwrite(file_path, test_y[i]) 
         
-        file_path2="ae_dataset\\T\\real data\\simulate_%s"%obs_path_dir[index]
+        file_path2="image_result\\ae_predict\\real data\\simulate_%s"%obs_path_dir[index]
         cv2.imwrite(file_path2, test_data[i])
                
 #%% output reshape
 train_y_flatten=train_y.reshape((train_y.shape[0]*train_y.shape[1]*train_y.shape[2]))
 train_data_flatten=train_data.reshape((train_data.shape[0]*train_data.shape[1]*train_data.shape[2]))
 
-#testing#
 test_y_flatten=test_y .reshape((test_y .shape[0]*test_y .shape[1]*test_y .shape[2]))
 test_data_flatten=test_data.reshape((test_data.shape[0]*test_data.shape[1]*test_data.shape[2]))
 
 #%% model performance evaluation 
+os.chdir("..")
+from error_indicator import ErrorIndicator
 train_ae_R2=ErrorIndicator.R2(train_y_flatten, train_data_flatten)
 train_ae_rmse=ErrorIndicator.RMSE(train_y_flatten, train_data_flatten)
 train_ae_RAE=ErrorIndicator.RAE(train_y_flatten, train_data_flatten)
@@ -173,27 +200,7 @@ test=pd.DataFrame([test_ae_R2,test_ae_rmse,test_ae_RAE])
 test.index = ['test_ae_R2','test_rmse','test_RAE']
 ae_performance = pd.concat([train,test],axis=0)
 
-#%% get model code 
-# Define a new model that outputs the desired layer's output
-get_code = Model(inputs=model.input, outputs=model.layers[7].output)
-
-# Get the output of the desired layer using the predict method
-train_code_y = get_code.predict(train_data)
-test_code_y = get_code.predict(test_data)
-
-#%% save to dataframe
-
-train_code_y = pd.DataFrame(train_code_y)
-test_code_y = pd.DataFrame(test_code_y)
-
-writer = pd.ExcelWriter(r"code_dataset\T\encoded_value.xlsx",engine='xlsxwriter')
-train_code_y.iloc[train_index,:].reset_index(drop=True).to_excel(writer,sheet_name="train_code_y(obs)")
-train_code_y.iloc[len(train_index):,:].reset_index(drop=True).to_excel(writer,sheet_name="train_code_y(simulate)")
-test_code_y.iloc[:len(test_index),:].reset_index(drop=True).to_excel(writer,sheet_name="test_code_y(obs)")
-test_code_y.iloc[len(test_index):,:].reset_index(drop=True).to_excel(writer,sheet_name="test_code_y(simulate)")
-# Save the Excel file
-writer.close()
-
+#%%
 writer = pd.ExcelWriter(r"T\result\autoencoder(performance).xlsx",engine='xlsxwriter')
 ae_performance.to_excel(writer,sheet_name="ae_performance")
 train_code_y.iloc[train_index,:].reset_index(drop=True).to_excel(writer,sheet_name="train_code_y(obs)")

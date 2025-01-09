@@ -10,9 +10,12 @@ import numpy as np
 import os
 
 os.chdir(os.path.dirname(__file__))
+os.chdir("..\..")
+
+#%% read unique index
+# unique index is the index of all locations for each date
 unique_index=pd.read_csv(r"dataset\unique_index.csv",index_col=0)
 
-#%%
 new_unique_index=[[]*1 for j in range(unique_index.shape[1])]
 for j in range(unique_index.shape[1]):
     # Find indices where NaN values are present
@@ -27,12 +30,9 @@ new_unique_index = np.array(new_unique_index).T
 
 #%%
 import geopandas as gpd
-from pyproj import CRS
-from fiona.crs import from_epsg
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
-
 
 same_index=pd.read_excel(r"dataset\same_index.xlsx",sheet_name="weather_index",index_col=0)
 RH=pd.read_excel(r"dataset\RH.xlsx",sheet_name="obs_input",index_col=0)
@@ -51,7 +51,7 @@ for timestep in range(6):
     sort_RH=np.array([RH.iloc[new_unique_index[date_index],timestep] for date_index in range(new_unique_index.shape[0])])
     
 # Read the shapefile
-    shapefile_path = "gis/zhuoshui_town/Export_Output_6.shp"
+    shapefile_path = "gis/zhuoshui_town.shp"
     gdf = gpd.read_file(shapefile_path)
     
     # Create a colormap
@@ -73,13 +73,13 @@ for timestep in range(6):
             fig, ax = plt.subplots(figsize=(10, 10), facecolor='none')
             joined_gdf.plot(ax=ax, column='value', edgecolor='none', cmap=cmap, norm=norm, legend=False)
             gdf.plot(ax=ax, edgecolor='black', facecolor='none', linewidth=0.5)
-            plt.savefig(r"240605(new data)\image_dataset\obs(T-%s)\%s.png"%(timestep,date[date_index][:13]), transparent=True)
+            plt.savefig(r"image_dataset\RH\obs(T-%s)\%s.png"%(timestep,date[date_index][:13]), transparent=True)
             plt.show()
         else:
             fig, ax = plt.subplots(figsize=(10, 10))
             joined_gdf.plot(ax=ax, column='value', edgecolor='none', cmap=cmap, norm=norm, legend=True)
             gdf.plot(ax=ax, edgecolor='black', facecolor='none', linewidth=0.5)
-            plt.savefig(r"240605(new data)\image_dataset\obs(T-%s)\對照組.png"%timestep)
+            plt.savefig(r"image_dataset\RH\obs(T-%s)\對照組.png"%timestep)
             plt.show()
         
     # 對照組
@@ -102,13 +102,13 @@ def plot_simulate_regional_result(region_info,array,legend=0):
         fig, ax = plt.subplots(figsize=(10, 10), facecolor='none')
         joined_gdf.plot(ax=ax, column='value', edgecolor='none', cmap=cmap, norm=norm, legend=False)
         gdf.plot(ax=ax, edgecolor='black', facecolor='none', linewidth=0.5)
-        plt.savefig(r"240605(new data)\image_dataset\simulate\%s.png"%date[date_index][:13], transparent=True)
+        plt.savefig(r"image_dataset\RH\simulate\%s.png"%date[date_index][:13], transparent=True)
         plt.show()
     else:
         fig, ax = plt.subplots(figsize=(10, 10))
         joined_gdf.plot(ax=ax, column='value', edgecolor='none', cmap=cmap, norm=norm, legend=True)
         gdf.plot(ax=ax, edgecolor='black', facecolor='none', linewidth=0.5)
-        plt.savefig(r"240605(new data)\image_dataset\simulate\對照組.png")
+        plt.savefig(r"image_dataset\RH\simulate\對照組.png")
         plt.show()
  
 # 對照組

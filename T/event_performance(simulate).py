@@ -55,6 +55,7 @@ regional_mean_max_test=np.array([spatiotemporal_obs_mean.iloc[index].mean() for 
 regional_mean_max_test_index = np.argsort(regional_mean_max_test)[::-1]
 
 #%% date info
+os.chdir("..")
 date_info=pd.read_excel(r"dataset\T.xlsx",sheet_name="date_info",index_col=0)
 same_index=pd.read_excel(r"dataset\same_index.xlsx",sheet_name="weather_index",index_col=0)
 date_info=date_info.iloc[np.array(same_index.iloc[:,0]),:].reset_index(drop=True)
@@ -134,7 +135,7 @@ btm_info=pd.read_csv(r"gis\btm.txt"); btm_info=btm_info.loc[:,'TOWNNAME']
 mid_info=pd.read_csv(r"gis\mid.txt"); mid_info=mid_info.loc[:,'TOWNNAME']
 top_info=pd.read_csv(r"gis\top.txt"); top_info=top_info.loc[:,'TOWNNAME']
 
-#%%
+#%% save each date and subcatchment performance (train) from t+1 to t+6
 r2=[[] for timestep in range(1,7)];rmse=[[] for timestep in range(1,7)];mae=[[] for timestep in range(1,7)];
 region_mae=[[] for timestep in range(1,7)];top_mae=[[] for timestep in range(1,7)];mid_mae=[[] for timestep in range(1,7)];
 btm_mae=[[] for timestep in range(1,7)]
@@ -192,7 +193,7 @@ for i in range(6):
 
 writer.close()
 
-#%%
+#%% save each date and subcatchment performance (test) from t+1 to t+6
 r2=[[] for timestep in range(1,7)];rmse=[[] for timestep in range(1,7)];mae=[[] for timestep in range(1,7)];
 region_mae=[[] for timestep in range(1,7)];top_mae=[[] for timestep in range(1,7)];mid_mae=[[] for timestep in range(1,7)];
 btm_mae=[[] for timestep in range(1,7)]

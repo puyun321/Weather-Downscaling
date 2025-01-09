@@ -7,7 +7,6 @@ Created on Fri May  3 13:53:29 2024
 
 import os
 import pandas as pd
-from pathlib import Path
 import numpy as np
 os.chdir(os.path.dirname(__file__))
 os.chdir("..")
@@ -15,7 +14,7 @@ from others import create_file
 from error_indicator import ErrorIndicator
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm, Normalize
+from matplotlib.colors import Normalize
 from matplotlib.cm import  ScalarMappable
 os.chdir(os.path.dirname(__file__))
 
@@ -199,7 +198,7 @@ writer.close()
 
 #%% model evaluation
 r2=[[] for timestep in range(1,7)];rmse=[[] for timestep in range(1,7)];mae=[[] for timestep in range(1,7)];
-region_mae=[[] for timestep in range(1,7)];top_mae=[[] for timestep in range(1,7)];mid_mae=[[] for timestep in range(1,7)];
+region_mae=[[] for timestep in range(1,7)]; top_mae=[[] for timestep in range(1,7)]; mid_mae=[[] for timestep in range(1,7)];
 btm_mae=[[] for timestep in range(1,7)]
 
 i=0

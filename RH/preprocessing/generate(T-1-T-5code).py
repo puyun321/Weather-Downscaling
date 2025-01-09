@@ -10,15 +10,16 @@ import numpy as np
 import os
 
 os.chdir(os.path.dirname(__file__))
+os.chdir("../..")
 
 #%%
 import cv2
 
-obs_path1="240605(new data)\\image_dataset\\obs(T-1)"
-obs_path2="240605(new data)\\image_dataset\\obs(T-2)"
-obs_path3="240605(new data)\\image_dataset\\obs(T-3)"
-obs_path4="240605(new data)\\image_dataset\\obs(T-4)"
-obs_path5="240605(new data)\\image_dataset\\obs(T-5)"
+obs_path1="image_dataset\\RH\\obs(T-1)"
+obs_path2="image_dataset\\RH\\obs(T-2)"
+obs_path3="image_dataset\\RH\\obs(T-3)"
+obs_path4="image_dataset\\RH\\obs(T-4)"
+obs_path5="image_dataset\\RH\\obs(T-5)"
 
 obs_path_dir=os.listdir(obs_path1)[:-1]
 
@@ -47,7 +48,7 @@ obs_T4_code = get_code1.predict(obs_T4)
 obs_T5_code = get_code1.predict(obs_T5)
 
 #%%
-writer = pd.ExcelWriter(r"code_dataset\encoded_value(T-1-T-5)-new.xlsx",engine='xlsxwriter')
+writer = pd.ExcelWriter(r"code_dataset\RH\encoded_value(T-1-T-5).xlsx",engine='xlsxwriter')
 pd.DataFrame(obs_T1_code).to_excel(writer,sheet_name="obs_T1_code")
 pd.DataFrame(obs_T2_code).to_excel(writer,sheet_name="obs_T2_code")
 pd.DataFrame(obs_T3_code).to_excel(writer,sheet_name="obs_T3_code")

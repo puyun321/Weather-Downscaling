@@ -33,7 +33,7 @@ weather_index_=pd.DataFrame(weather_index_)
 prep_index_=pd.DataFrame(weather_index_)
 
 #%% save as excel
-writer = pd.ExcelWriter('/dataset/濁水溪/same_index.xlsx', engine='xlsxwriter')
+writer = pd.ExcelWriter(r'dataset/same_index.xlsx', engine='xlsxwriter')
 #save same index for cwb,outdoor,indoor  
 weather_index_.to_excel(writer,sheet_name="weather_index")
 prep_index_.to_excel(writer,sheet_name="prep_index")
@@ -41,8 +41,6 @@ writer.save()
 
 #%% save simulate info
 import os
-os.chdir(r"D:\lab\research\research_use_function")
-# from find_distance import find_nearest_index
 os.chdir(os.path.dirname(__file__))
 
 simulate_info = result.iloc[:,:2].drop_duplicates(keep="first").reset_index(drop=True)
