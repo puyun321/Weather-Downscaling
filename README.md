@@ -4,7 +4,7 @@ Dive into the dynamic world of data science and environmental research with this
 
 ## 📂 Folder Structure & Data Highlights
 
-- **`image_dataset/`**  
+- **Image datasets:**  
   Explore visual representations of essential factors from towns within the Jhuoshuei River watershed. These include:  
   - **Temperature (T)** 🌡️  
   - **Relative Humidity (RH)** 💧  
