@@ -8,15 +8,11 @@ Created on Mon Jun 24 15:45:01 2024
 
 import os
 import pandas as pd
-from pathlib import Path
 import numpy as np
-os.chdir(r"D:\lab\research\research_use_function")
+os.chdir(os.path.dirname(__file__))
+os.chdir("..")
 from others import create_file
-from error_indicator import error_indicator
-import geopandas as gpd
-import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm, Normalize
-from matplotlib.cm import  ScalarMappable
+from error_indicator import ErrorIndicator
 os.chdir(os.path.dirname(__file__))
 
 #%%
@@ -59,10 +55,6 @@ simulate_vpd_train=classify_data(simulate_vpd_train, small_threshold, huge_thres
 simulate_vpd_test=classify_data(simulate_vpd_test, small_threshold, huge_threshold)
 
 #%% model performance evaluation
-"""
-評估指標
-"""
-
 from sklearn.metrics import confusion_matrix
 def model_accuracy(pred_class,obs_class):
     matrix = []
@@ -83,8 +75,6 @@ simulate_train_performance=model_accuracy(simulate_vpd_train, vpd_obs_train)
 simulate_test_performance=model_accuracy(simulate_vpd_test, vpd_obs_test)
 
 #%%
-VPD_path=r"D:\lab\research\weather downscale\zhuoshui\VPD"
-os.chdir(VPD_path)
 
 vpd_train=pd.concat([train_station_info,pd.DataFrame(vpd_obs_train),pd.DataFrame(spatiotemporal_vpd_train)],axis=1)
 vpd_test=pd.concat([test_station_info,pd.DataFrame(vpd_obs_test),pd.DataFrame(spatiotemporal_vpd_test)],axis=1)
