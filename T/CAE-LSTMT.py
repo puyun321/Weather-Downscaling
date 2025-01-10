@@ -194,7 +194,7 @@ test_index=np.array(unique_index.iloc[int(len(unique_index)*(train_ratio+val_rat
 test_index_index=test_index.flatten()
 test_index=test_index[~np.isnan(test_index)].astype(int)
 
-#%% normalization 
+#%% 
 x_homogeneous_train = x_homogeneous[train_index,:,:]
 x_heterogeneous_train = x_heterogeneous[train_index,:,:]
 y_output_train = y_output[train_index,:]
