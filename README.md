@@ -1,4 +1,4 @@
-# Welcome to the Jhuoshuei Watershed Dataset Repository! 🌊🌿
+# Welcome to the Jhuoshuei Watershed Weather Downscaling Repository! 🌊🌿
 
 Dive into the dynamic world of data science and environmental research with this repository, which houses datasets and models for analyzing key factors in the Jhuoshuei River watershed. Here's what you'll find inside:
 
