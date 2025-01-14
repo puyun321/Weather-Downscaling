@@ -17,6 +17,9 @@ Dive into the dynamic world of data science and environmental research with this
   - `T/preprocessing/autoencoder.py` for temperature  
   - `RH/preprocessing/autoencoder.py` for relative humidity  
 
+- **The Historical and Observation Datasets:**  
+  We are unable to provide these time series datasets here as they are protected by copyright.
+
 ## 🧠 Models and Benchmarks
 
 Unleash the power of deep learning with our specialized models tailored to temperature and humidity analysis:
